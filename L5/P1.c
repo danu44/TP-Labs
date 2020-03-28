@@ -1,41 +1,43 @@
 #include <stdio.h>
 
-#define MAX_SIZE 100
+struct stack_item {
+	int value;
+	struct stack_item *down;
+};
 
-int ArrayStack[MAX_SIZE];
-int top = -1;
- 
-void Push(int x)
-{
-	if (top == MAX_SIZE - 1)
-	{
-		printf("Error: stack overflow\n");
-		return;
-	}
-	ArrayStack[++top] = x;
+struct stack_item *top;
+struct stack_item *new;
+
+void push(int num) {
+	new = (struct stack_item *) malloc(sizeof(struct stack_item));
+	new->value = num;
+	new->down = top;
+	top = new;
 }
 
-void Pop()
+void pop()
 {
-	if (top == -1)
-	{
-		printf("Error: No element to pop\n");
-		return;
-	}
-	top--;
+	struct stack_item *tmp_ptr = top;
+	int tmp_val = top->value;
+	top = top->down;
+	free(tmp_ptr);
 }
 
-void Print() {
+void print()
+{
 	int i;
+	struct stack_item *tmp_ptr = top;
 	printf("\nForma binara stiva output: ");
-	for (i = 0; i <= top; i++)
+	for (i = 0; i <= 7; i++)
 	{
-		printf("%d ", ArrayStack[i]);
+		printf("%d ", tmp_ptr->value);
+		tmp_ptr = tmp_ptr->down;
 	}
+	free(tmp_ptr);
 	printf("\n");
 }
 
-void Binar(int x)
+void binar(int x)
 {
 	int i;
 
@@ -43,24 +45,19 @@ void Binar(int x)
 		printf("%d ", (x & 1 << i) >> i);
 }
 
-void inStiva(int x)
+void inStack(int x)
 {
 	int i;
 
 	x ^= 255;
-	for (i = 7; i >= 0; i--)
-		Push((x & 1 << i) >> i);
-}
-
-void Clear()
-{
-	for (int i = 0; i <= 7; i++)
-		Pop();
+	for (i = 0; i <= 7; i++)
+		push((x & 1 << i) >> i);
 }
 
 int main()
 {
-	int n, i, v[MAX_SIZE];
+	top = (struct stack_item *) malloc(sizeof(struct stack_item));
+	int n, i, v[20];
 	printf("Introduceti n: ");
 	scanf("%d", &n);
 	printf("Introduceti numerele\n");
@@ -71,10 +68,9 @@ int main()
 	{
 		printf("Input: %d\n", v[i]);
 		printf("Forma binara: ");
-		Binar(v[i]);
-		inStiva(v[i]);
-		Print();
-		Clear();
+		binar(v[i]);
+		inStack(v[i]);
+		print();
 	}
 	system("pause");
 	return 0;
